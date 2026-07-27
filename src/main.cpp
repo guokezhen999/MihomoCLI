@@ -299,6 +299,7 @@ void run_manage_subscriptions_menu() {
             "Select Active Subscription (选择生效订阅)",
             "Add New Subscription       (增加订阅)",
             "Delete Subscription        (删除订阅)",
+            "Update Subscription        (更新配置订阅)",
             "Return to Main Menu        (返回主菜单)"
         };
         
@@ -330,7 +331,7 @@ void run_manage_subscriptions_menu() {
         
         std::cout << "\033[" << lines_to_clear << "A\033[J" << std::flush;
         
-        if (!choice.has_value() || *choice == 3) {
+        if (!choice.has_value() || *choice == 4) {
             break;
         }
         
@@ -420,6 +421,23 @@ void run_manage_subscriptions_menu() {
                 std::cout << "\033[1A\033[J" << std::flush;
             }
         }
+        else if (*choice == 3) {
+            bool success = false;
+            std::string msg;
+            {
+                Spinner s("Updating subscription configurations...");
+                auto res = Service::update_subscription();
+                success = res.first;
+                msg = res.second;
+            }
+            if (success) {
+                std::cout << color::GREEN << "✔ " << msg << color::RESET << "\n";
+            } else {
+                std::cout << color::RED << "✖ " << msg << color::RESET << "\n";
+            }
+            std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+            std::cout << "\033[1A\033[J" << std::flush;
+        }
     }
 }
 
@@ -431,7 +449,6 @@ void run_main_menu(Config& conf) {
         "Switch Mode                (切换模式: Rule/Global/Direct)",
         "Select Node                (切换代理节点)",
         "Manage Subscriptions       (管理订阅)",
-        "Update Subscription        (更新配置订阅)",
         "Query IP & Location       (查询公网IP及归属地)",
         "Show Live Logs             (查看实时日志)",
         "Exit                       (退出管理)"
@@ -485,7 +502,7 @@ void run_main_menu(Config& conf) {
         int lines_to_clear = running ? 6 : 5;
         std::cout << "\033[" << lines_to_clear << "A\033[J" << std::flush;
         
-        if (!choice.has_value() || *choice == 8) {
+        if (!choice.has_value() || *choice == 7) {
             std::cout << "Goodbye!\n";
             break;
         }
@@ -556,26 +573,9 @@ void run_main_menu(Config& conf) {
             run_manage_subscriptions_menu();
         }
         else if (*choice == 5) {
-            bool success = false;
-            std::string msg;
-            {
-                Spinner s("Updating subscription configurations...");
-                auto res = Service::update_subscription();
-                success = res.first;
-                msg = res.second;
-            }
-            if (success) {
-                std::cout << color::GREEN << "✔ " << msg << color::RESET << "\n";
-            } else {
-                std::cout << color::RED << "✖ " << msg << color::RESET << "\n";
-            }
-            std::this_thread::sleep_for(std::chrono::milliseconds(1500));
-            std::cout << "\033[1A\033[J" << std::flush;
-        }
-        else if (*choice == 6) {
             check_ip_command_with_spinner(conf.mixed_port);
         }
-        else if (*choice == 7) {
+        else if (*choice == 6) {
             std::cout << "\n" << color::CYAN << "Showing logs (Press Ctrl+C to return to menu)..." << color::RESET << "\n\n";
             Service::show_live_logs();
             std::cout << "\nReturned to menu.\n";
