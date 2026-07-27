@@ -1,0 +1,27 @@
+# CMake build files and directories
+/[Bb]uild/
+/clash-cli
+
+# Object files and libraries
+*.o
+*.obj
+*.so
+*.a
+*.lib
+*.dll
+*.dylib
+
+# CMake cache and temporary files
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+cmake_install.cmake
+Makefile
+compile_commands.json
+
+# IDEs and editors
+.vscode/
+.idea/
+*.user
+*.suo
+*.sln
